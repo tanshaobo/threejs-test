@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    body{
+      margin: 0;
+      overflow: hidden;
+    }
+  </style>
+  <script src="./js/build/three.js"></script>
+  <script src="./js/jquery-1.11.1.js"></script>
+  <script src="./js/examples/js/controls/TrackballControls.js"></script>
+  <script src="./js/examples/js/libs/dat.gui.min.js"></script>
+  <script src="./js/examples/js/libs/stats.min.js"></script>
+</head>
+<body>
+  <div id="WebGL-output"></div>
+  <div id="Stats-output"></div>
+  <script>
+    $(function(){
+      // 初始化性能插件
+      var stats = initStats()
+      // 创建场景
+      var scene =new THREE.Scene()
+      // 创建相机--透视相机
+      var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000)
+      // 创建webGL渲染器
+      var webGLRenderer = new THREE.WebGLRenderer()
+
+      // 配置渲染器
+      webGLRenderer.antialias = true // 抗锯齿
+      webGLRenderer.autoClear = true // 自动清除
+      webGLRenderer.setClearColor( 0x050505 ) // 设置背景色
+      webGLRenderer.setSize(window.innerWidth,window.innerHeight) // 渲染范围
+
+      // 配置相机
+      camera.position.set(0, 400, 800) // 相机在三维坐标中的位置
+      camera.lookAt(new THREE.Vector3(0, 0, 0)) // 相机看向空间坐标原点
+
+      // 创建立方体
+      var cubeGeometry = new THREE.CubeGeometry(100, 100, 100)
+      var cubeMaterial = new THREE.MeshLambertMaterial({color: Math.random() * 0xffffff })
+      var cube = new THREE.Mesh(cubeGeometry, cubeMaterial)
+      cube.position.y = 90
+      scene.add(cube)
+
+      // 创建光源
+      var ambientLight = new THREE.AmbientLight( 0x404040 )
+      var directionLight1 = new THREE.DirectionalLight( 0xC0C0C0 )
+      var directionLight2 = new THREE.DirectionalLight( 0xC0C0C0 )
+
+      directionLight1.position.set(-300, -400, 300)
+      directionLight2.position.set(300, 400, -300)
+
+      scene.add(ambientLight)
+      scene.add(directionLight1)
+      scene.add(directionLight2)
+
+      // 创建网格辅助
+      var gridHelper = new THREE.GridHelper(1200, 50, 0xFF4444, 0x404040)
+      scene.add(gridHelper)
+
+      // 创建轨迹球
+      var trackballControls = new THREE.TrackballControls(camera, webGLRenderer.domElement);
+      
+      // 加入图形调试控件
+      var controls = new function () {
+        this.rotationSpeed = 0.02
+        this.wireframe = cubeMaterial.wireframe;
+        this.color = cubeMaterial.color.getStyle()
+        this.gridHelper = false
+        this.backGround = webGLRenderer.getClearColor().getHex()
+      }
+      // 创建可视化调试控件
+      var gui = new dat.GUI()
+      
+      var helperGui = gui.addFolder('Helperss')
+      helperGui.add(controls, 'gridHelper').onChange(function(e){
+        console.log(e)
+        if(e){
+          scene.remove(gridHelper)
+        }else{
+          scene.add(gridHelper)
+        }
+      })
+
+      var meshGui = gui.addFolder('Mesh')
+      meshGui.add(controls, 'wireframe').onChange(function(e){
+        cubeMaterial.wireframe = e
+      })
+      meshGui.addColor(controls, 'color').onChange(function(e){
+        cubeMaterial.color.setStyle(e)
+      })
+      meshGui.add(controls,'rotationSpeed',0, 0.1)
+
+      var sceneGui = gui.addFolder('Scene')
+      sceneGui.addColor(controls, 'backGround').onChange(function(e){
+        webGLRenderer.setClearColor(e)
+      })
+
+      // 初始化性能插件
+      function initStats() {
+        var stats = new Stats()
+        stats.setMode(0)
+        stats.domElement.style.position = "absolute"
+        stats.domElement.style.left = '0px'
+        stats.domElement.style.top = '0px'
+        $("#Stats-output").append(stats.domElement)
+        return stats
+      }
+
+      // 渲染器添加到画布
+      $("#WebGL-output").append(webGLRenderer.domElement)
+
+      // 窗口大小改变时触发
+      function onWindowResize(){
+        camera.aspect = window.innerWidth / window.innerHeight
+        camera.updateProjectionMatrix()
+        webGLRenderer.setSize(window.innerWidth, window.innerHeight)
+      }
+
+      window.addEventListener('resize', onWindowResize, false)
+      // 渲染方法
+      function render() {
+        stats.update()
+        cube.rotation.x += controls.rotationSpeed
+        cube.rotation.y += controls.rotationSpeed
+        cube.rotation.z += controls.rotationSpeed
+        // 更新轨迹球操作范围
+        trackballControls.handleResize()
+        // 更新物体位置
+        trackballControls.update()
+        //渲染
+        webGLRenderer.render(scene, camera)
+      }
+
+      // 实现动画效果
+      function animate() {
+        requestAnimationFrame(animate)
+        render()
+      }
+      animate()
+    })
+  </script>
+</body>
+</html>
