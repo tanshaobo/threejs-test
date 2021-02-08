@@ -1,0 +1,111 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport"
+		content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0,viewport-fit=cover">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>&lrm;</title>
+</head>
+<body class="mobile">
+  <wx-open-launch-weapp id="launch-btn" username="gh_43a2ef6f8aa4" path="/pages/index/index">
+    <template>
+      <button style="width: 200px; height: 45px; text-align: center; font-size: 17px; display: block; margin: 0 auto; padding: 8px 24px; border: none; border-radius: 4px; background-color: #07c160; color:#fff;">打开小程序</button>
+    </template>
+  </wx-open-launch-weapp>
+
+  <script src="../../scripts/JForm/js/lib/jquery/dist/jquery.js"></script>
+  <script src="https://res.wx.qq.com/open/js/jweixin-1.6.0.js"></script>
+	<script>
+		initPage();
+		
+    function initPage() {
+			$(function () {
+        var url = location.href.split('#')[0];
+        var wxAppId = 'wxf8c6ac2af4c347d8'
+        var data = {
+          'appId': wxAppId,
+          'url': url
+        }
+					get(JSON.stringify(data)) 
+			});
+    }
+		//微信签名授权接口
+		function get(data) {
+			$.ajax({
+				url: '/api/we-chat/signature/get',
+				type: "POST",
+				dataType: "json",
+				data: data,
+				success: function (msg) {
+					console.log('msg:' + msg)
+					wx.config({//wx配置
+						debug: false,
+						appId: 'wxf8c6ac2af4c347d8',// 必填，公众号的唯一标识
+						timestamp: msg.timestamp,// 必填，生成签名的时间戳
+						nonceStr: msg.noncestr,// 必填，生成签名的随机串
+						signature: msg.signature,// 必填，签名
+						jsApiList: [// 必填，需要使用的JS接口列表
+							'checkJsApi',
+							'onMenuShareAppMessage',
+							'onMenuShareQQ',
+							'onMenuShareWeibo',
+							'onMenuShareQZone',
+							'hideMenuItems',
+							'showMenuItems',
+							'hideAllNonBaseMenuItem',
+							'showAllNonBaseMenuItem',
+							'translateVoice',
+							'startRecord',
+							'stopRecord',
+							'onVoiceRecordEnd',
+							'playVoice',
+							'onVoicePlayEnd',
+							'pauseVoice',
+							'stopVoice',
+							'uploadVoice',
+							'downloadVoice',
+							'chooseImage',
+							'previewImage',
+							'uploadImage',
+							'downloadImage',
+							'getNetworkType',
+							'openLocation',
+							'getLocation',
+							'chooseLocation',
+							'hideOptionMenu',
+							'showOptionMenu',
+							'closeWindow',
+							'scanQRCode',
+							'chooseWXPay',
+							'openProductSpecificView',
+							'addCard',
+							'chooseCard',
+							'openCard'
+						],
+						openTagList: [
+                "wx-open-launch-weapp"
+            ]
+					});
+				}
+			})
+		}
+	</script>
+  <script>
+    var launchBtn = document.getElementById('launch-btn')
+    launchBtn.addEventListener('ready', function (e) {
+      console.log('开放标签 ready')
+    })
+    launchBtn.addEventListener('launch', function (e) {
+      console.log('开放标签 success')
+    })
+    launchBtn.addEventListener('error', function (e) {
+      console.log('开放标签 fail', e.detail)
+    })
+  </script>
+</body>
+
+
+</html>
