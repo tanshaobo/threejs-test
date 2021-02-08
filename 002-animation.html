@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+  </style>
+  <script src="./js/build/three.js"></script>
+  <script src="./js/jquery-1.11.1.js"></script>
+</head>
+
+<body>
+  <div id="WebGL-output"></div>
+  <script>
+    $(function () {
+      // 创建场景
+      var scene = new THREE.Scene()
+
+      // 创建相机
+      var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000)
+
+      // 创建渲染器
+      var webGLRenderer = new THREE.WebGLRenderer()
+
+      // 配置相机
+      camera.position.set(200, 150, 200)
+      camera.lookAt(new THREE.Vector3(0, 0, 0))
+
+      //配置渲染器
+      webGLRenderer.antialias = true
+      webGLRenderer.autoClear = true
+      webGLRenderer.setClearColor(0x050505)
+      webGLRenderer.setSize(window.innerWidth, window.innerHeight)
+
+      // 配置环境光
+      var ambientLight = new THREE.AmbientLight(0x404040)
+      scene.add(ambientLight)
+
+      // 创建光源
+      var spotLight = new THREE.SpotLight(0xccccc)
+      spotLight.position.set(-100, 300, 10)
+      scene.add(spotLight)
+
+      // 创建平面
+      var planeGeometry = new THREE.PlaneGeometry(200, 400)
+      var planeMaterial = new THREE.MeshLambertMaterial({ color: 0xCCCCCC })
+      var plane = new THREE.Mesh(planeGeometry, planeMaterial)
+
+      // 绕X轴旋转
+      plane.rotation.x = -0.5 * Math.PI
+      plane.position.x = -10
+      plane.position.y = -10
+      plane.position.z = -80
+      scene.add(plane)
+
+      // 创建立方体
+      var cubeGeometry = new THREE.CubeGeometry(50, 50, 50)
+      var cubeMaterial = new THREE.MeshLambertMaterial({ color: Math.random() * 0xffffff })
+      var cube = new THREE.Mesh(cubeGeometry, cubeMaterial)
+      cube.position.x = 10
+      cube.position.y = 30
+      cube.position.z = -30
+      cube.castShadow = true
+      scene.add(cube)
+      // 把渲染页面添加到容器中
+      $("#WebGL-output").append(webGLRenderer.domElement)
+
+      // 渲染
+      function render() {
+        cube.rotation.x += 0.01
+        cube.rotation.y += 0.01
+        cube.rotation.z += 0.01
+        webGLRenderer.render(scene, camera)
+      }
+
+      function animate() {
+        requestAnimationFrame(animate)
+        render()
+      }
+      animate()
+
+      // setInterval(render, 17)
+    })
+  </script>
+</body>
+
+</html>

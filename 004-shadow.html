@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>shadow</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="WebGL-output"></div>
+  <script src="./js/build/three.js"></script>
+  <script src="./js/jquery-1.11.1.js"></script>
+  <script>
+
+    (function () {
+      var scene = new THREE.Scene()
+
+      var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000)
+
+      var webGLRenderer = new THREE.WebGLRenderer()
+
+      var ambientLight = new THREE.AmbientLight({ color: 0x404040 })
+
+      var spotLight = new THREE.SpotLight(0xcccccc)
+
+      camera.position.set(0, 200, 300)
+      camera.lookAt(new THREE.Vector3(0, 0, 0))
+
+      webGLRenderer.antialias = true
+      webGLRenderer.autoClear = true
+      webGLRenderer.setClearColor(0x050505)
+      webGLRenderer.setSize(window.innerWidth, window.innerHeight)
+      webGLRenderer.shadowMap.enabled = true
+      webGLRenderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+      spotLight.position.set(-100, 300, 10)
+      spotLight.castShadow = true
+      spotLight.shadow.mapSize.width = 2048
+      spotLight.shadow.mapSize.height = 2048
+
+      scene.add(ambientLight)
+      scene.add(spotLight)
+
+      var planeGeometry = new THREE.PlaneGeometry(400, 400)
+      var planeMaterial = new THREE.MeshLambertMaterial({ color: 0x6D6565 })
+      var plane = new THREE.Mesh(planeGeometry, planeMaterial)
+      plane.receiveShadow = true
+      plane.rotation.x = -0.5 * Math.PI
+      plane.position.x = -10
+      plane.position.y = -10
+      plane.position.z = -70
+      scene.add(plane)
+
+      var sphereGeometry = new THREE.SphereGeometry(5, 20, 20)
+      var sphereMaterial = new THREE.MeshLambertMaterial({ color: Math.random() * 0XFFFFF })
+      var sphere = new THREE.Mesh(sphereGeometry, sphereMaterial)
+      sphere.position.y = 30
+      sphere.position.x = -60
+      sphere.castShadow = true
+      scene.add(sphere)
+
+
+      var cubeGeometry = new THREE.CubeGeometry(40, 40, 40)
+      var cubeMaterial = new THREE.MeshLambertMaterial({ color: Math.random() * 0XFFFFF })
+      var cube = new THREE.Mesh(cubeGeometry, cubeMaterial)
+      cube.position.x = 10
+      cube.position.z = 150
+      cube.castShadow = true
+      scene.add(cube)
+
+      var pivotPoint = new THREE.Object3D()
+      pivotPoint.add(cube)
+      sphere.add(pivotPoint)
+
+      var box = document.getElementById('WebGL-output')
+      box.appendChild(webGLRenderer.domElement)
+
+      function render(){
+        sphere.rotation.y += 0.01 
+        webGLRenderer.render(scene, camera)
+      }
+
+      function animate() {
+        render()
+        requestAnimationFrame(animate)
+      }
+      animate()
+
+      window.addEventListener('resize', onResize, false)
+
+      function onResize() {
+        
+        camera.aspect = window.innerWidth / window.innerHeight
+        camera.updateProjectionMatrix()
+        webGLRenderer.setSize(window.innerWidth, window.innerHeight)
+        render()
+      }
+
+
+    })()
+  </script>
+</body>
+
+</html>
