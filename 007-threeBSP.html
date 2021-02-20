@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>布尔运算</title>
+  <style>
+    body{
+      margin: auto;
+      overflow: hidden;
+    }
+  </style>
+  <script src="./js/jquery-1.11.1.js"></script>
+  <script src="./js/build/three.js"></script>
+  <script src="./js/examples/js/libs/stats.min.js"></script>
+  <script src="./js/examples/js/Detector.js"></script>
+  <script src="./js/examples/js/controls/TrackballControls.js"></script>
+  <script src="./js/examples/js/libs/dat.gui.min.js"></script>
+  <script src="./js/ThreeBSP.js"></script>
+</head>
+<body>
+  <div id="WebGL-output"></div>
+  <div id="Stats-output"></div>
+  <script>
+    $(function(){
+      var stats = initStats()
+      var scene = new THREE.Scene()
+      var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000)
+
+      camera.position.set(0, 200, 300)
+      camera.lookAt(new THREE.Vector3(0, 0, 0))
+
+      var renderer = Detector.webgl ? new THREE.WebGLRenderer({antialias: true}) : new THREE.CanvasRenderer()
+      renderer.setClearColor( 0x050505 )
+      renderer.setSize(window.innerWidth, window.innerHeight)
+
+      renderer.shadowMap.enabled = true
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap
+
+      $("#WebGL-output").append(renderer.domElement)
+
+      var ambientLight = new THREE.AmbientLight( 0xEEE0E5 )
+      scene.add(ambientLight)
+
+      var spotLight = new THREE.SpotLight( 0xffffff )
+      spotLight.position.set(-100, 200, -200)
+      scene.add(spotLight)
+
+      var controls = new THREE.TrackballControls(camera, renderer.domElement)
+
+      var cylinderGeometry = new THREE.CylinderGeometry(100, 100, 20, 50, 20);
+      var boxGeometry = new THREE.BoxGeometry(100, 100, 100, 30, 30);
+      
+      var cylinderMaterial = new THREE.MeshLambertMaterial({wireframe: true, color: 0x9AFF9A})
+      var boxMaterial = new THREE.MeshLambertMaterial({wireframe: false, color: 0x9F79EE})
+
+      var cylinder = new THREE.Mesh(cylinderGeometry, cylinderMaterial)
+      var box = new THREE.Mesh(boxGeometry, cylinderMaterial)
+      scene.add(cylinder)
+      scene.add(box)
+
+      var cylinderBSP = new ThreeBSP(cylinder)
+      var boxBSP = new ThreeBSP(box)
+
+      var objects = []
+      objects.push(cylinderBSP)
+      objects.push(boxBSP)
+      objects.push(boxMaterial)
+
+      var guiControls = new function(){
+        // 交集
+        this.intersect = createMesh('intersect')
+        // 并集
+        this.union = createMesh('union')
+        // 差集
+        this.subtract = createMesh('subtract')
+        // 差集 2
+        this.suptract = createMesh('suptract')
+      }
+      var gui = new dat.GUI()
+      gui.add(guiControls, 'intersect')
+      gui.add(guiControls, 'union')
+      gui.add(guiControls, 'subtract')
+      gui.add(guiControls, 'suptract')
+      gui.close()
+
+      function createMesh(type){
+        function funResult(){
+          if(scene.getObjectByName('mesh') != null){
+            scene.remove(scene.getObjectByName('mesh'))
+          }
+          var result
+          switch(type){
+            case 'intersect':
+              result = objects[0].intersect(objects[1])
+              break;
+            case 'union':
+              result = objects[0].union(objects[1])
+              break;
+            case 'subtract':
+              result = objects[0].subtract(objects[1])
+              break;
+            case 'suptract':
+              result = objects[1].subtract(objects[0])
+            break;
+          }
+          var mesh = result.toMesh()
+          mesh.material = objects[2]
+          mesh.name="mesh"
+          scene.add(mesh)
+        }
+        return funResult
+      }
+
+      function initStats() {
+        var stats = new Stats()
+
+        stats.domElement.style.position = 'absolute'
+        stats.domElement.style.left = "0"
+        stats.domElement.style.top = "0"
+
+        $("#Stats-output").append(stats.domElement)
+
+        return stats
+      }
+
+      function update(){
+        controls.update()
+        controls.handleResize()
+        stats.update()
+      }
+
+      function animate(){
+        requestAnimationFrame(animate)
+        renderer.render(scene,camera)
+        update()
+      }
+      animate()
+    })
+  </script>
+</body>
+</html>

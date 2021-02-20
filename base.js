@@ -1,5 +1,3 @@
-
-
 var scene, camera, renderer, controls;
 var stats = initStats();
 

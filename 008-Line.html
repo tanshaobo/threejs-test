@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    body{
+      margin: auto;
+      overflow: hidden;
+    }
+  </style>
+  <script src="./js/jquery-1.11.1.js"></script>
+  <script src="./js/build/three.js"></script>
+  <script src="./js/examples/js/libs/stats.min.js"></script>
+  <script src="./js/examples/js/controls/TrackballControls.js"></script>
+  <script src="./js/examples/js/Detector.js"></script>
+</head>
+<body>
+  <div id="WebGL-output"></div>
+  <div id="Stats-output"></div>  
+  <script>
+    $(function(){
+      var stats = initStats()
+      var scene, camera, renderer, controls, light
+
+      function initScene(){
+        scene = new THREE.Scene()
+      }
+
+      function initCamera(){
+        camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000)
+        camera.position.set(0, 200, 300)
+        camera.lookAt(new THREE.Vector3(0, 0, 0))
+      }
+
+      function initRenderer(){
+        renderer = Detector.webgl ? new THREE.WebGLRenderer({antialias: true, autoClear: true}) : new THREE.CanvasRenderer()
+        renderer.setSize(window.innerWidth, window.innerHeight)
+        renderer.setClearColor( 0x050505 )
+
+        $("#WebGL-output").append(renderer.domElement)
+      }
+
+      function initControl() {
+        controls = new THREE.TrackballControls(camera, renderer.domElement)
+      }
+
+      function initLight(){
+        light = new THREE.SpotLight( 0xEAEAEA )
+        light.position.set(-100, 200, 200)
+        scene.add(light)
+        scene.add(new THREE.AmbientLight( 0x3D3D3D ))
+      }
+
+      function initContent() {
+        var helper = new THREE.GridHelper(1200, 60, 0xFF4444, 0x404040 )
+        scene.add(helper)
+
+        var lineGeometry = new THREE.Geometry()
+        lineGeometry.vertices.push(new THREE.Vector3(-200, -200, -200))
+        lineGeometry.vertices.push(new THREE.Vector3(200, 200, 200))
+
+        var lineMaterial = new THREE.LineDashedMaterial({
+          color: 0x9b30ff
+        })
+        var line = new THREE.Line(lineGeometry,lineMaterial)
+        line.computeLineDistances()
+        scene.add(line)
+      }
+
+      function initStats() {
+        var stats = new Stats()
+        stats.domElement.style.position = 'absolute'
+        stats.domElement.style.left = '0px'
+        stats.domElement.style.top = '0px'
+        $("#Stats-output").append(stats.domElement)
+        return stats
+      }
+
+      function init(){
+        initScene()
+        initCamera()
+        initRenderer()
+        initControl()
+        initLight()
+        initContent()
+      }
+      
+      function update(){
+        stats.update()
+        controls.update()
+        controls.handleResize()
+        
+      }
+      function animate(){
+        requestAnimationFrame(animate)
+        renderer.render(scene, camera)
+        update()
+      }
+      init()
+      animate()
+    })
+  </script>
+</body>
+</html>
