@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>布尔运算</title>
+  <style>
+    body{
+      margin: auto;
+      overflow: hidden;
+    }
+  </style>
+  <script src="./js/build/three.js"></script>
+  <script src="./js/examples/js/libs/stats.min.js"></script>
+  <script src="./js/examples/js/Detector.js"></script>
+  <script src="./js/examples/js/controls/TrackballControls.js"></script>
+  <script src="./js/examples/js/libs/dat.gui.min.js"></script>
+  <script src="./js/ThreeBSP.js"></script>
+</head>
+<body>
+  <script>
+    var objects = []
+    function initContent(){
+      var cylinderGeometry = new THREE.CylinderGeometry(100, 100, 20, 50, 20);
+      var boxGeometry = new THREE.BoxGeometry(100, 100, 100, 30, 30);
+      var cylinderMaterial = new THREE.MeshLambertMaterial({wireframe: true, color: 0x9AFF9A})
+      var boxMaterial = new THREE.MeshLambertMaterial({wireframe: false, color: 0x9F79EE})
+      var cylinder = new THREE.Mesh(cylinderGeometry, cylinderMaterial)
+      var box = new THREE.Mesh(boxGeometry, cylinderMaterial)
+      
+      scene.add(cylinder)
+      scene.add(box)
+      var cylinderBSP = new ThreeBSP(cylinder)
+      var boxBSP = new ThreeBSP(box)
+      objects.push(cylinderBSP)
+      objects.push(boxBSP)
+      objects.push(boxMaterial)
+    }
+    
+    function initGui(){
+      var guiControls = new function(){
+        // 交集
+        this.intersect = createMesh('intersect')
+        // 并集
+        this.union = createMesh('union')
+        // 差集
+        this.subtract = createMesh('subtract')
+        // 差集 2
+        this.suptract = createMesh('suptract')
+      }
+      var gui = new dat.GUI()
+      gui.add(guiControls, 'intersect')
+      gui.add(guiControls, 'union')
+      gui.add(guiControls, 'subtract')
+      gui.add(guiControls, 'suptract')
+      gui.close()
+      
+    }
+    
+    function createMesh(type){
+      function funResult(){
+        if(scene.getObjectByName('mesh') != null){
+          scene.remove(scene.getObjectByName('mesh'))
+        }
+        var result
+        switch(type){
+          case 'intersect':
+            result = objects[0].intersect(objects[1])
+            break;
+          case 'union':
+            result = objects[0].union(objects[1])
+            break;
+          case 'subtract':
+            result = objects[0].subtract(objects[1])
+            break;
+          case 'suptract':
+            result = objects[1].subtract(objects[0])
+            break;
+        }
+        var mesh = result.toMesh()
+        mesh.material = objects[2]
+        mesh.name="mesh"
+        scene.add(mesh)
+      }
+      return funResult
+    }     
+</script>
+<script src="./common.js"></script>
+<script>
+  renderer.shadowMap.enabled = true
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap
+  
+  scene.add(new THREE.AmbientLight( 0xEEE0E5 ))
+  
+  light = new THREE.SpotLight( 0xffffff )
+  light.position.set(-100, 200, -200)
+  scene.add(light)
+</script>
+</body>
+</html>

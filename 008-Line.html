@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    body{
+      margin: auto;
+      overflow: hidden;
+    }
+  </style>
+  <script src="./js/build/three.js"></script>
+  <script src="./js/examples/js/Detector.js"></script>
+  <script src="./js/examples/js/libs/stats.min.js"></script>
+  <script src="./js/examples/js/libs/dat.gui.min.js"></script>
+  <script src="./js/examples/js/controls/TrackballControls.js"></script>
+</head>
+<body>
+  <script>
+
+      function initContent() {
+        var helper = new THREE.GridHelper(1200, 60, 0xFF4444, 0x404040 )
+        scene.add(helper)
+
+        var lineGeometry = new THREE.Geometry()
+        lineGeometry.vertices.push(new THREE.Vector3(-200, -200, -200))
+        lineGeometry.vertices.push(new THREE.Vector3(200, 200, 200))
+
+        var lineMaterial = new THREE.LineDashedMaterial({
+          color: 0x9b30ff
+        })
+        var line = new THREE.Line(lineGeometry,lineMaterial)
+        line.computeLineDistances()
+        scene.add(line)
+      }
+
+      function initGui(){
+        var gui = new function(){
+
+        }
+
+        guiControls = new dat.GUI()
+      }
+  </script>
+  <script src="./common.js"></script>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    body{
+      margin: auto;
+      overflow: hidden;
+    }
+  </style>
+  <script src="./js/build/three.js"></script>
+  <script src="./js/examples/js/Detector.js"></script>
+  <script src="./js/examples/js/libs/stats.min.js"></script>
+  <script src="./js/examples/js/libs/dat.gui.min.js"></script>
+  <script src="./js/examples/js/controls/TrackballControls.js"></script>
+  <script src="./js/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body> 
+  <script src="./js/Microsoft YaHei_Regular.json"></script>
+  <script>
+
+    function initContent(){
+      var helper = new THREE.GridHelper(1200, 60, 0xcd3700, 0x424242)
+      scene.add(helper)
+
+      var text = 'THREE.js'
+      var loader = new THREE.FontLoader()
+      loader.load("./js/Microsoft YaHei_Regular.json", function(response){
+        var fontCfg = {
+          font: response,
+          size: 80,
+          height: 5,
+          curveSegments: 12,
+          bevelEnabled: true,
+          bevelThickness: 10,
+          bevelSize: 8
+        }
+        var fontGeometry = new THREE.TextGeometry(text,fontCfg)
+        fontGeometry.computeBoundingBox()
+
+        var fontMaterial = new THREE.MeshNormalMaterial()
+        var font = new THREE.Mesh(fontGeometry, fontMaterial)
+
+        font.position.x = -(fontGeometry.boundingBox.max.x - fontGeometry.boundingBox.min.x) / 2
+
+        scene.add(font)
+
+      })
+    }
+
+    function initGui(){
+      var gui = new function(){
+
+      }
+      guiControls = new dat.GUI()
+    }
+
+    
+</script>
+<script src="./common.js"></script>
+<script>
+  light.castShadow = true
+  renderer.shadowMap.enabled = true
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap
+</script>
+</body>
+</html>
