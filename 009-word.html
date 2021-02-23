@@ -102,7 +102,7 @@
         var fontMaterial = new THREE.MeshNormalMaterial()
         var font = new THREE.Mesh(fontGeometry, fontMaterial)
 
-        font.position.x = -(fontGeometry.boudingBox.max.x - fontGeometry.boudingBox.min.x) / 2
+        font.position.x = -(fontGeometry.boundingBox.max.x - fontGeometry.boundingBox.min.x) / 2
 
         scene.add(font)
 

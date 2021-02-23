@@ -9,7 +9,7 @@
     header { margin: auto;box-shadow: 0 0 4px 0 rgba(12,250,144,.5);position: relative;}
     header h3{margin: 0;text-align: center; line-height: 60px;font-size: 20px;letter-spacing: 8px;}
     main { width: 1200px;margin: auto;}
-    main ul {margin:0;padding: 0;display: flex;list-style: none;margin: 8px;}
+    main ul {margin:0;padding: 0;display: flex;list-style: none;margin: 8px;flex-wrap: wrap;}
     main ul li {width: 21%; line-height: 36px;height: 36px;border: 1px solid rgb(236,130,20);margin: 8px;text-align: center;}
     main ul li a{text-decoration: none; font-size: 14px;color: rgb(236,130,20);}
   </style>
@@ -23,10 +23,15 @@
   </main>
   <script>
     let arr = [
-      {path:'./001.html',name:'threeJS开始'},
-      {path:'./002.html',name:'three 动画'},
-      {path:'./003.html',name:'003'},
-      {path:'./mouseMove.html',name:'鼠标移动'},
+      {path:'./001-first.html',name:'001-first'},
+      {path:'./002-animation.html',name:'002-animation'},
+      {path:'./003-devtools.html',name:'003-devtools'},
+      {path:'./004-shadow.html',name:'004-shadow'},
+      {path:'./005-resize.html',name:'005-resize'},
+      {path:'./007-threeBSP.html',name:'007-threeBSP'},
+      {path:'./008-Line.html',name:'008-Line'},
+      {path:'./009-Word.html',name:'009-Word'},
+      {path:'./mouseMove.html',name:'mouseMove'},
     ]
     let m = document.getElementsByTagName('main')[0]
     let u = m.getElementsByTagName('ul')[0]
