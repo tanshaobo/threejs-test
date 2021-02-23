@@ -1,50 +1,67 @@
-(function(){
-  var arr = [
-    './js/jquery-1.11.1.js',
-    './js/build/three.js',
-    './js/examples/js/libs/stats.min.js',
-    './js/examples/js/libs/dat.gui.min.js'
-  ]
-  loadJS(arr)
+var stats = initStats()
+var scene, camera, renderer, controls, light, guiControls
 
-  // var WebGLBox = document.createElement("div")
-  // var StatsBox = document.createElement("div")
-  
-  // document.body.appendChild(WebGLBox)
-  // document.body.appendChild(StatsBox)
-
-  // var stats = initStats()
-
-  //   function initStats() {
-  //     var stats = new Stats()
-
-  //     stats.domElement.style.position = 'absolute'
-  //     stats.document.style.left = '0px'
-  //     stats.document.style.right = '0px'
-
-  //     StatsBox.append(stats)
-
-  //     return stats
-  //   }
-})(window)
-
-function loadJS(k){
-  v = typeof(k) == "string" ? [k] : k
-  return new Promise((resolve,reject) => {
-    var load = function(i){
-      var s = document.createElement('script')
-      s.type = 'text/javascript'
-      s.onload = function(){
-        i++
-        if(i == v.length){
-          resolve()
-        }else{
-          load(i)
-        }
-        s.src = v[i]
-        document.head.appendChild(s)
-      }
-    }
-    load(0)
-  })
+function initScene(){
+  scene = new THREE.Scene()
 }
+
+function initCamera(){
+  camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000)
+  camera.position.set(0, 200, 300)
+  camera.lookAt(new THREE.Vector3(0, 0, 0))
+}
+
+function initRenderer(){
+  renderer = Detector.webgl ? new THREE.WebGLRenderer({antialias: true, autoClear: true}) : new THREE.CanvasRenderer()
+  renderer.setSize(window.innerWidth, window.innerHeight)
+  renderer.setClearColor( 0x050505 )
+
+  document.body.appendChild(renderer.domElement)
+}
+
+function initControl() {
+  controls = new THREE.TrackballControls(camera, renderer.domElement)
+}
+
+function initLight(){
+  light = new THREE.SpotLight( 0xEAEAEA )
+  light.position.set(-100, 200, 200)
+  scene.add(light)
+  scene.add(new THREE.AmbientLight( 0x3D3D3D ))
+}
+
+function initStats() {
+  var stats = new Stats()
+  stats.domElement.style.position = 'absolute'
+  stats.domElement.style.left = '0px'
+  stats.domElement.style.top = '0px'
+  document.body.append(stats.domElement)
+  return stats
+}
+
+function init(){
+  initScene()
+  initCamera()
+  initRenderer()
+  initControl()
+  initLight()
+  initContent()
+  initGui()
+}
+
+function update(){
+  stats.update()
+  controls.update()
+  controls.handleResize()
+  
+}
+function animate(){
+  requestAnimationFrame(animate)
+  renderer.render(scene, camera)
+  update()
+}
+
+(function(){
+  init()
+  animate()
+})()

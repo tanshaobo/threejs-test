@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    body{
+      margin: auto;
+      overflow: hidden;
+    }
+    #label{
+      position: absolute;
+      padding: 10px;
+      background: rgba(255,255,255,.6);
+      line-height: 1;
+      border-radius: 5px;
+    }
+  </style>
+  <script src="./js/build/three.js"></script>
+  <script src="./js/examples/js/libs/stats.min.js"></script>
+  <script src="./js/examples/js/Detector.js"></script>
+  <script src="./js/examples/js/controls/TrackballControls.js"></script>
+  <script src="./js/examples/js/controls/OrbitControls.js"></script>
+  <script src="./js/examples/js/controls/OrthographicTrackballControls.js"></script>
+</head>
+<body>
+  <div id="WebGL-output"></div>
+  <div id="Stats-output"></div>
+  <div id="label"></div>
+  <script>
+    let stats = initStats()
+
+    let scene, camera, renderer, controls, light, selectobject
+
+    function init(){
+      initScene()
+      initCamera()
+      initRenderer()
+      initLight()
+      initControls()
+      initContent()
+    }
+
+    function initScene(){
+      scene = new THREE.Scene()
+    }
+
+    function initCamera(){
+      camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000)
+      camera.position.set(0, 400, 600)
+      camera.lookAt(new THREE.Vector3(0, 0, 0))
+    }
+
+    function initRenderer(){
+      renderer = Detector.webgl ? new THREE.WebGLRenderer({antialias: true}) : new THREE.CanvasRenderer()
+      renderer.setSize(window.innerWidth, window.innerHeight)
+      renderer.setClearColor( 0x050505 )
+      document.getElementById('WebGL-output').appendChild(renderer.domElement)
+    }
+
+    function initControls(){
+      controls = new THREE.TrackballControls(camera, renderer.domElement)
+    }
+
+    function initLight(){
+      light = new THREE.SpotLight(0xffffff)
+      light.position.set(-300, 600, -400)
+      light.castShadow = true
+      scene.add(light)
+      scene.add(new THREE.AmbientLight(0x5c5c5c))
+    }
+
+    function initContent(){
+      var helper = new THREE.GridHelper(1200, 50, 0xCD3700, 0x4A4A4A)
+      scene.add(helper)
+
+      var cubeGeometry = new THREE.BoxGeometry(100, 100, 100)
+      var cubeMaterial = new THREE.MeshLambertMaterial({color: 0x9370DB})
+      var cube = new THREE.Mesh(cubeGeometry, cubeMaterial)
+      cube.position.y = 50
+      cube.name = 'cube'
+      scene.add(cube)
+
+      var sphereGeometry = new THREE.SphereGeometry(50, 50, 50, 50)
+      var sphereMaterial = new THREE.MeshLambertMaterial({color: 0x3cb371})
+      var sphere = new THREE.Mesh(sphereGeometry, sphereMaterial)
+      sphere.position.x = 200      
+      sphere.position.y = 50
+      scene.add(sphere)      
+    }
+
+    function initStats(){
+      let stats = new Stats()
+      stats.domElement.style.position = "absolute"
+      stats.domElement.style.left = "0"
+      stats.domElement.style.right = "0"
+      document.getElementById("Stats-output").appendChild(stats.domElement)
+      return stats
+    }
+
+    function update(){
+      stats.update()
+      controls.update()
+    }
+
+    function animate(){
+      requestAnimationFrame(animate)
+      renderer.render(scene,camera)
+      update()
+    }
+
+    (function(){
+      init()
+      animate()
+    })()
+  </script>
+</body>
+</html>

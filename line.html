@@ -22,9 +22,12 @@
   <script src="./js/build/three.js"></script>
   <script src="./js/examples/js/Detector.js"></script>
   <script src="./js/examples/js/libs/stats.min.js"></script>
+  <script src="./js/examples/js/libs/dat.gui.min.js"></script>
   <script src="./js/examples/js/controls/OrbitControls.js"></script>
 
   <script>
+    /* 地面网格所需变量 */
+    var length = 200;  /*线段长度*/
     /* 场景内容 */
     function initContent() {
       var geometry = new THREE.Geometry();/* 简单基础几何 */
@@ -45,11 +48,14 @@
         var lineY = new THREE.Line(geometry, lineMaterial);
         lineY.rotation.y = 0.5 * Math.PI;
         lineY.position.x = (i * 10) - length / 2;
-
-
         scene.add(lineY);
       }
+    }
+    function initGui(){
+      gui = new function () {
 
+      }
+      var guiControls = new dat.GUI();
     }
   </script>
   <script src="./base.js"></script>
