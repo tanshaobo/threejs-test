@@ -11,33 +11,85 @@
       overflow: hidden;
     }
   </style>
-  <script src="./js/jquery-1.11.1.js"></script>
   <script src="./js/build/three.js"></script>
+  <script src="./js/examples/js/Detector.js"></script>
   <script src="./js/examples/js/libs/stats.min.js"></script>
   <script src="./js/examples/js/libs/dat.gui.min.js"></script>
+  <script src="./js/examples/js/controls/OrbitControls.js"></script>
+  <script src="./js/examples/js/controls/TrackballControls.js"></script>
 </head>
 <body>
-  <div id="WebGL-output"></div>
-  <div id="Stats-output"></div>
   <script>
-    $(function(){
-      var stats = initStats()
+    var planeGeometry
+    function initContent(){
+      planeGeometry = new THREE.PlaneGeometry(60, 40, 1, 1)
+      var planeMaterial = new THREE.MeshLambertMaterial({color: 0xffffff})
+      var plane = new THREE.Mesh(planeGeometry, planeMaterial)
 
-      var scene = new THREE.Scene()
+      plane.receiveShadow = true
+      plane.rotation.x = - 0.5 * Math.PI
+      scene.add(plane)
+    }
 
-      var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000)
-      camera.position.set(-30, 40, 30)
-      camera.lookAt(scene.position)
-      function initStats(){
-        var stats = new Stats()
-        stats.domElement.style.position = 'absolute'
-        stats.domElement.style.top = '0px'
-        stats.domElement.style.left = '0px'
-
-        $("#Stats-output").append(stats.domElement)
-        return stats 
+    function initGui(){
+      var guiControls = new function(){
+        this.rotationSpeed = 0.02
+        this.numberOfObjects = scene.children.length 
+        console.log(scene)
+        scene.fog = new THREE.Fog( 0xffffff, 0.015, 100)
+        this.color = scene.fog.color.getStyle()
+        this.removeCube = function(){
+          var allChildren = scene.children
+          var lastObject = allChildren[allChildren.length - 1]
+          if(lastObject instanceof THREE.Mesh){
+            scene.remove(lastObject)
+            this.numberOfObjects = scene.children.length
+          }
+        }
+        this.addCube = function(){
+          var cubeSize = Math.ceil(Math.random() * 3)
+          var cubeGeometry = new THREE.CubeGeometry(cubeSize, cubeSize, cubeSize)
+          var cubeMaterial = new THREE.MeshLambertMaterial({color: Math.random() * 0xffffff })
+          var cube = new THREE.Mesh(cubeGeometry, cubeMaterial)
+          cube.castShadow = true
+          cube.receiveShadow = true 
+          
+          cube.position.x = -30 + Math.round(Math.random() * planeGeometry.parameters.width )
+          cube.position.y = 5 + Math.round(Math.random() * 5 )
+          cube.position.z = -20 + Math.round(Math.random() * planeGeometry.parameters.height )
+          
+          scene.add(cube)
+          this.numberOfObjects = scene.children.length 
+        }
       }
-    })
+
+      var gui = new dat.GUI();
+      gui.add(guiControls, 'rotationSpeed', 0, 0.5)
+      gui.add(guiControls, 'addCube')
+      gui.add(guiControls, 'removeCube')
+      gui.add(guiControls, 'numberOfObjects').listen()
+      gui.addColor(guiControls, 'color').onChange(function(e){
+        scene.fog.color.setStyle(e)
+      })
+    }
+
+    function render(){
+      // console.log(1)
+    }
+  </script>
+  <script src="./common.js"></script>
+  <script>
+    camera.position.set(-30, 40, 30)
+    scene.background = new THREE.Color(0xff9999);
+    renderer.shadowMap.enabled = true
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap
+    
+    light.position.set(-40, 60, -10)
+    light.castShadow = true
+    light.shadow.mapSize.height = 2048
+    light.shadow.mapSize.width = 2048
+    
+    
   </script>
 </body>
 </html>

@@ -47,18 +47,29 @@ function init(){
   initLight()
   initContent()
   initGui()
+  addEventListener('resize', onWindowResize, false)
 }
 
-function update(){
+function update(render){
   stats.update()
   controls.update()
   controls.handleResize()
+
+  if(render){
+    render()
+  }
   
 }
 function animate(){
   requestAnimationFrame(animate)
   renderer.render(scene, camera)
-  update()
+  update(render)
+}
+
+function onWindowResize(){
+  camera.aspect = window.innerWidth / window.innerHeight
+  camera.updateProjectionMatrix()
+  renderer.setSize(window.innerWidth, window.innerHeight)
 }
 
 (function(){
