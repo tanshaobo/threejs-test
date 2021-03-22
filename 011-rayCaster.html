@@ -29,90 +29,118 @@
   <div id="Stats-output"></div>
   <div id="label"></div>
   <script>
-    let stats = initStats()
 
-    let scene, camera, renderer, controls, light, selectobject
+    let selectobject
 
-    function init(){
-      initScene()
-      initCamera()
-      initRenderer()
-      initLight()
-      initControls()
-      initContent()
+    function initContent(){
+      // 网格
+      var helper = new THREE.GridHelper(1200, 50, 0xCD3700, 0x4A4A4A)
+      scene.add(helper)
+
+      // 立方体
+      var cubeGeometry = new THREE.BoxGeometry(100, 100, 100)
+      var cubeMaterial = new THREE.MeshLambertMaterial({color: 0x9370DB})
+      var cube = new THREE.Mesh(cubeGeometry, cubeMaterial)
+      cube.position.y = 50
+      cube.name = '立方体'
+      scene.add(cube)
+
+      // 球
+      var sphereGeometry = new THREE.SphereGeometry(50, 50, 50, 50)
+      var sphereMaterial = new THREE.MeshLambertMaterial({color: 0x3cb371})
+      var sphere = new THREE.Mesh(sphereGeometry, sphereMaterial)
+      sphere.position.x = 200      
+      sphere.position.y = 50
+      sphere.name = '球体'
+      scene.add(sphere)      
+
+      // 圆柱
+      var cylinderGeometry = new THREE.CylinderGeometry(50, 50, 100, 100)
+      var cylinderMaterical =new THREE.MeshLambertMaterial({color: 0xCD7054})
+      var cylinder = new THREE.Mesh(cylinderGeometry,cylinderMaterical)
+      cylinder.position.x = -200
+      cylinder.position.y = 50
+      cylinder.name = '柱体'
+      scene.add(cylinder)
+    }
+    
+    function initGui(){}
+    
+    function render(){
+      if(selectobject != null && selectobject != undefined){
+        renderDiv(selectobject)
+      }
     }
 
-    function initScene(){
-      scene = new THREE.Scene()
+    function keyDown(e){
+      switch(e.keyCode){
+        case 13:
+          initCamera()
+          initControl()
+          break;
+      }
     }
 
-    function initCamera(){
-      camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000)
-      camera.position.set(0, 400, 600)
-      camera.lookAt(new THREE.Vector3(0, 0, 0))
-    }
+    function onClick(e){
+      var intersects = getIntersects(e)
+      console.log(intersects)
 
-    function initRenderer(){
-      renderer = Detector.webgl ? new THREE.WebGLRenderer({antialias: true}) : new THREE.CanvasRenderer()
-      renderer.setSize(window.innerWidth, window.innerHeight)
-      renderer.setClearColor( 0x050505 )
-      document.getElementById('WebGL-output').appendChild(renderer.domElement)
+      
+      if(intersects.length != 0 && intersects[0].object instanceof THREE.Mesh){
+        selectobject = intersects[0].object
+        ChannelMaterial(selectobject)
+      } else {
+        console.log('未选中Mesh')
+      }
     }
+    
+    // 获取射线相交的数组
+    function getIntersects(e){
+      e.preventDefault()
 
-    function initControls(){
-      controls = new THREE.TrackballControls(camera, renderer.domElement)
+      var raycaster = new THREE.Raycaster()
+      var mouse = new THREE.Vector2()
+      
+      mouse.x = (e.clientX / window.innerWidth) * 2 - 1
+      mouse.y = -(e.clientY / window.innerHeight) * 2 + 1
+
+      raycaster.setFromCamera(mouse, camera)
+      var intersects = raycaster.intersectObjects(scene.children)
+      return intersects
     }
-
-    function initLight(){
+    
+    function ChannelMaterial(object){
+      var material = new THREE.MeshLambertMaterial({
+        color: 0xffffff * Math.random(),
+        transparent: !object.material.transparent,
+        opacity: 0.8
+      })
+      object.material = material
+    }
+    
+    function renderDiv(object){
+      let halfWidth = window.innerWidth / 2
+      let halfHeight = window.innerHeight / 2
+      let vector = object.position.clone().project(camera)
+      let l = document.getElementById('label')
+      label.style.left = vector.x * halfWidth + halfWidth + 'px'
+      label.style.top = -vector.y * halfHeight + halfHeight - object.position.y + 'px'
+      label.innerText = 'name: ' + object.name
+    }
+  </script>
+  <script src="./common.js"></script>
+  <script>
+     camera.position.set(0, 400, 600)
+     function initLight(){
       light = new THREE.SpotLight(0xffffff)
       light.position.set(-300, 600, -400)
       light.castShadow = true
       scene.add(light)
       scene.add(new THREE.AmbientLight(0x5c5c5c))
     }
-
-    function initContent(){
-      var helper = new THREE.GridHelper(1200, 50, 0xCD3700, 0x4A4A4A)
-      scene.add(helper)
-
-      var cubeGeometry = new THREE.BoxGeometry(100, 100, 100)
-      var cubeMaterial = new THREE.MeshLambertMaterial({color: 0x9370DB})
-      var cube = new THREE.Mesh(cubeGeometry, cubeMaterial)
-      cube.position.y = 50
-      cube.name = 'cube'
-      scene.add(cube)
-
-      var sphereGeometry = new THREE.SphereGeometry(50, 50, 50, 50)
-      var sphereMaterial = new THREE.MeshLambertMaterial({color: 0x3cb371})
-      var sphere = new THREE.Mesh(sphereGeometry, sphereMaterial)
-      sphere.position.x = 200      
-      sphere.position.y = 50
-      scene.add(sphere)      
-    }
-
-    function initStats(){
-      let stats = new Stats()
-      stats.domElement.style.position = "absolute"
-      stats.domElement.style.left = "0"
-      stats.domElement.style.right = "0"
-      document.getElementById("Stats-output").appendChild(stats.domElement)
-      return stats
-    }
-
-    function update(){
-      stats.update()
-      controls.update()
-    }
-
-    function animate(){
-      requestAnimationFrame(animate)
-      renderer.render(scene,camera)
-      update()
-    }
-
     (function(){
-      init()
-      animate()
+      addEventListener('keydown', keyDown, false)
+      addEventListener('click', onClick, false)
     })()
   </script>
 </body>

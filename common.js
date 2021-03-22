@@ -50,13 +50,13 @@ function init(){
   addEventListener('resize', onWindowResize, false)
 }
 
-function update(render){
+function update(fn){
   stats.update()
   controls.update()
   controls.handleResize()
 
-  if(render){
-    render()
+  if(fn){
+    fn()
   }
   
 }
