@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    body{
+      margin: 0;
+      overflow: hidden;
+    }
+  </style>
+  <script src="./js/build/three.js"></script>
+  <script src="./js/examples/js/Detector.js"></script>
+  <script src="./js/examples/js/libs/stats.min.js"></script>
+  <script src="./js/examples/js/libs/dat.gui.min.js"></script>
+  <script src="./js/examples/js/controls/TrackballControls.js"></script>
+  <script src="./js/examples/js/controls/OrbitControls.js"></script>
+  <script src="./js/examples/js/controls/OrthographicTrackballControls.js"></script>
+</head>
+<body>
+  <script>
+    var cube, plane,helper,cubeMaterial
+    // 初始化内容
+    function initContent(){
+      // 创建立方体
+      var cubeGeometry = new THREE.CubeGeometry(50, 50, 50)
+      cubeMaterial = new THREE.MeshLambertMaterial({ color: 0xFFFFFF * Math.random() })
+      cube = new THREE.Mesh(cubeGeometry, cubeMaterial)
+      cube.position.y = 30
+      scene.add(cube)
+
+      // 创建平面
+      var planeGeometry = new THREE.PlaneGeometry(200, 400)
+      var planeMaterial = new THREE.MeshLambertMaterial({ color: 0xFFFFFF * Math.random() })
+      plane = new THREE.Mesh(planeGeometry, planeMaterial)
+      
+      plane.position.x = 40
+      plane.position.y = 5
+      plane.position.z = -60
+      scene.add(plane)
+
+      // 创建网格
+      helper = new THREE.GridHelper(1200, 50, 0xCD3700, 0x4A4A4A)
+      scene.add(helper)
+    }
+    // 初始化gui面板
+    function initGui(){
+      guiControls = new function(){
+        this.planeRotationX = -0.5 * Math.PI
+        this.planeRotationY = 0
+        this.planeRotationZ = - 0.25 * Math.PI
+        
+        this.cubeWireframe = cubeMaterial.wireframe
+        this.cubeColor = cubeMaterial.color.getStyle()
+        console.log(this.cubeColor)
+        this.FogColor = scene.fog != null ? scene.fog.color.getStyle() : cubeMaterial.color.getStyle()
+        this.Fog = function(){
+          scene.fog = scene.fog == null ? new THREE.Fog( 0xffffff, 0.015, 1500) : null
+        } 
+        this.sceneBg = renderer.getClearColor().getHex()
+      }
+      var gui = new dat.GUI()
+
+      var planeControls = gui.addFolder('planeControls')
+      planeControls.add(guiControls, 'planeRotationX', -Math.PI, Math.PI)
+      planeControls.add(guiControls, 'planeRotationY', -Math.PI, Math.PI)
+      planeControls.add(guiControls, 'planeRotationZ', -Math.PI, Math.PI)
+      planeControls.add(guiControls, 'planeRotationX').listen()
+      planeControls.add(guiControls, 'planeRotationY').listen()
+      planeControls.add(guiControls, 'planeRotationZ').listen()
+
+      var cubeControls =gui.addFolder('cubeControls')
+      cubeControls.add(guiControls, 'cubeWireframe').onChange(function(e){
+        cubeMaterial.wireframe = e
+        cube.castShadow = !e
+      })
+      cubeControls.addColor(guiControls,'cubeColor').onChange(function(e){
+        cubeMaterial.color.setStyle(e)
+      })
+
+      var sceneControls = gui.addFolder('sceneControls')
+      sceneControls.add(guiControls,'Fog')
+      sceneControls.addColor(guiControls,'FogColor').onChange(function(e){
+        if(scene.fog){
+          scene.fog.color.setStyle(e)
+        }
+      })
+      sceneControls.addColor(guiControls,'sceneBg').onChange(function(e){
+        renderer.setClearColor(e)
+      })
+    }
+    // 渲染补充
+    function render(){
+      plane.rotation.x = guiControls.planeRotationX
+      plane.rotation.y = guiControls.planeRotationY
+      plane.rotation.z = guiControls.planeRotationZ
+    }
+  </script>
+  <script src="./common.js"></script>
+  <script>
+    // 更改初始化设置
+    camera.position.set(0, 400, 600)
+    // // 监听补充
+    // (function(){
+
+    // })()
+  </script>
+</body>
+</html>

@@ -19,14 +19,13 @@
   </style>
   <script src="./js/build/three.js"></script>
   <script src="./js/examples/js/libs/stats.min.js"></script>
+  <script src="./js/examples/js/libs/dat.gui.min.js"></script>
   <script src="./js/examples/js/Detector.js"></script>
   <script src="./js/examples/js/controls/TrackballControls.js"></script>
   <script src="./js/examples/js/controls/OrbitControls.js"></script>
   <script src="./js/examples/js/controls/OrthographicTrackballControls.js"></script>
 </head>
 <body>
-  <div id="WebGL-output"></div>
-  <div id="Stats-output"></div>
   <div id="label"></div>
   <script>
 
@@ -64,12 +63,16 @@
       scene.add(cylinder)
     }
     
-    function initGui(){}
+    function initGui(){
+      var gui = new function(){}
+
+    }
     
     function render(){
       if(selectobject != null && selectobject != undefined){
         renderDiv(selectobject)
       }
+      guiControls = new dat.GUI()
     }
 
     function keyDown(e){
