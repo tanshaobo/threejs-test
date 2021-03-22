@@ -62,7 +62,7 @@
           this.numberOfObjects = scene.children.length 
         }
         this.overCube = function(){
-          scene.overrideMaterial = new THREE.MeshLambertMaterial({color : 0xF39600 });
+          scene.overrideMaterial = new THREE.MeshLambertMaterial({color : 0xFFFFFF * Math.random() });
         }
       }
 
@@ -92,8 +92,7 @@
     light.castShadow = true
     light.shadow.mapSize.height = 2048
     light.shadow.mapSize.width = 2048
-    
-    
+
   </script>
 </body>
 </html>
