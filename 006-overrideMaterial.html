@@ -61,12 +61,16 @@
           scene.add(cube)
           this.numberOfObjects = scene.children.length 
         }
+        this.overCube = function(){
+          scene.overrideMaterial = new THREE.MeshLambertMaterial({color : 0xF39600 });
+        }
       }
 
       var gui = new dat.GUI();
       gui.add(guiControls, 'rotationSpeed', 0, 0.5)
       gui.add(guiControls, 'addCube')
       gui.add(guiControls, 'removeCube')
+      gui.add(guiControls, 'overCube')
       gui.add(guiControls, 'numberOfObjects').listen()
       gui.addColor(guiControls, 'color').onChange(function(e){
         scene.fog.color.setStyle(e)
@@ -74,7 +78,7 @@
     }
 
     function render(){
-      // console.log(1)
+      
     }
   </script>
   <script src="./common.js"></script>
