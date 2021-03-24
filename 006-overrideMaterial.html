@@ -20,11 +20,11 @@
 </head>
 <body>
   <script>
-    var planeGeometry
+    var planeGeometry, plane
     function initContent(){
       planeGeometry = new THREE.PlaneGeometry(60, 40, 1, 1)
       var planeMaterial = new THREE.MeshLambertMaterial({color: 0xffffff})
-      var plane = new THREE.Mesh(planeGeometry, planeMaterial)
+       plane = new THREE.Mesh(planeGeometry, planeMaterial)
 
       plane.receiveShadow = true
       plane.rotation.x = - 0.5 * Math.PI
@@ -32,12 +32,11 @@
     }
 
     function initGui(){
-      var guiControls = new function(){
+      guiControls = new function(){
         this.rotationSpeed = 0.02
         this.numberOfObjects = scene.children.length 
-        console.log(scene)
         scene.fog = new THREE.Fog( 0xffffff, 0.015, 100)
-        this.color = scene.fog.color.getStyle()
+        this.fogColor = scene.fog.color.getStyle()
         this.removeCube = function(){
           var allChildren = scene.children
           var lastObject = allChildren[allChildren.length - 1]
@@ -72,13 +71,19 @@
       gui.add(guiControls, 'removeCube')
       gui.add(guiControls, 'overCube')
       gui.add(guiControls, 'numberOfObjects').listen()
-      gui.addColor(guiControls, 'color').onChange(function(e){
+      gui.addColor(guiControls, 'fogColor').onChange(function(e){
         scene.fog.color.setStyle(e)
       })
     }
 
     function render(){
-      
+      scene.traverse(function(e){
+        if(e instanceof THREE.Mesh && e != plane){
+          e.rotation.x += guiControls.rotationSpeed
+          e.rotation.y += guiControls.rotationSpeed
+          e.rotation.z += guiControls.rotationSpeed
+        }
+      })
     }
   </script>
   <script src="./common.js"></script>
