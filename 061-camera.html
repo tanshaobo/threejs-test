@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+    <script src="./js/build/three.js"></script>
+    <script src="./js/examples/js/Detector.js"></script>
+    <script src="./js/examples/js/libs/stats.min.js"></script>
+    <script src="./js/examples/js/libs/dat.gui.min.js"></script>
+    <script src="./js/examples/js/controls/TrackballControls.js"></script>
+    <script src="./js/examples/js/controls/OrbitControls.js"></script>
+</head>
+
+<body>
+    <script>
+        var SCREEN_WIDTH = window.innerWidth,
+            SCREEN_HEIGHT = window.innerHeight,
+            aspect = SCREEN_WIDTH / SCREEN_HEIGHT,
+            frustumSize = 600,
+            cameraHelper, mesh1, mesh2, mesh3
+        cameraRig = new THREE.Group()
+            // 初始化内容
+        function initContent() {
+            cameraHelper = new THREE.CameraHelper(camera)
+            scene.add(cameraHelper)
+
+            mesh1 = new THREE.Mesh(
+                new THREE.SphereGeometry(100, 16, 8),
+                new THREE.MeshBasicMaterial({
+                    color: 0xffffff,
+                    wireframe: true
+                })
+            );
+            scene.add(mesh);
+            mesh2 = new THREE.Mesh(
+                new THREE.SphereGeometry(50, 16, 8),
+                new THREE.MeshBasicMaterial({
+                    color: 0x00ff00,
+                    wireframe: true
+                })
+            );
+            mesh2.position.y = 150;
+            mesh.add(mesh2);
+
+            mesh3 = new THREE.Mesh(
+                new THREE.SphereGeometry(5, 16, 8),
+                new THREE.MeshBasicMaterial({
+                    color: 0x0000ff,
+                    wireframe: true
+                })
+            );
+            mesh3.position.z = 150;
+            cameraRig.add(mesh3);
+
+        }
+        // 初始化gui面板
+        function initGui() {}
+        // 渲染补充
+        function render() {}
+    </script>
+    <script src="./common.js"></script>
+    <script>
+        // 更改初始化设置
+
+        // 监听补充
+        (function() {
+            camera = new THREE.OrthographicCamera(0.5 * frustumSize * aspect / -2, 0.5 * frustumSize * aspect / 2, frustumSize / 2, frustumSize / -2, 150, 1000);
+        })()
+    </script>
+</body>
+
+</html>
