@@ -1,1 +1,1 @@
- http://lyww1992.gitee.io/three-test
+https://tanshaobo.github.io/threejs-test/
